@@ -6,13 +6,13 @@ export const particleFlowDefaults = {
     /** Number of streams flowing through the scene. */
     strands: 100,
     /** Particles along each stream. */
-    particlesPerStrand: 300,
+    particlesPerStrand: 500,
     /** Loose particles drifting between the streams. */
-    dust: 6000,
+    dust: 10000,
     /** How thick each stream is, in world units. */
-    strandThickness: 0.5,
+    strandThickness: 1,
     /** Multiplier for particle size. */
-    particleSize: 1,
+    particleSize: 1.5,
     /** Largest a particle may get on screen, in pixels. */
     maxParticleSize: 30,
     /** Overall particle opacity, 0–1+. */
@@ -29,7 +29,7 @@ export const particleFlowDefaults = {
     colorA: '#09ed6a',
     colorB: '#f80651',
     /** Strength of the swirl the pointer stirs up, 0 disables it. */
-    pointerInfluence: 1,
+    pointerInfluence: 0.1,
     /** Distance from the camera to the centre of the scene. */
     cameraDistance: 38,
     /** Radians per second the camera orbits. */
@@ -50,6 +50,7 @@ uniform mat4 uView;
 uniform float uTime;
 uniform float uPixelRatio;
 uniform vec3 uVortex;
+uniform vec3 uVortexAxis;
 uniform float uVortexStrength;
 out float vAlpha;
 out float vGlow;
@@ -75,10 +76,11 @@ void main() {
     }
 
     vec3 toVortex = p - uVortex;
-    float pull = exp(-dot(toVortex, toVortex) * 0.015) * uVortexStrength * ${glFloat(settings.pointerInfluence)};
+    vec3 radial = toVortex - uVortexAxis * dot(toVortex, uVortexAxis);
+    float pull = exp(-dot(radial, radial) * 0.015) * uVortexStrength * ${glFloat(settings.pointerInfluence)};
     float angle = pull * 2.2;
-    toVortex.xz = mat2(cos(angle), -sin(angle), sin(angle), cos(angle)) * toVortex.xz;
-    p = uVortex + toVortex * (1.0 + pull * 0.35);
+    toVortex = toVortex * cos(angle) + cross(uVortexAxis, toVortex) * sin(angle) + uVortexAxis * dot(uVortexAxis, toVortex) * (1.0 - cos(angle));
+    p = uVortex + toVortex + (toVortex - uVortexAxis * dot(toVortex, uVortexAxis)) * pull * 0.35;
 
     vec4 view = uView * vec4(p, 1.0);
     gl_Position = uProj * view;
@@ -265,6 +267,7 @@ export default function ParticleFlowBackground(
             pixelRatio: uniform('uPixelRatio'),
             vortex: uniform('uVortex'),
             vortexStrength: uniform('uVortexStrength'),
+            vortexAxis: uniform('uVortexAxis'),
             dark: uniform('uDark'),
         };
 
@@ -274,7 +277,7 @@ export default function ParticleFlowBackground(
         ).matches;
         const pointer = { x: 0, y: 0, active: false };
         const eased = { x: 0, y: 0 };
-        const vortex = { x: 0, z: 0, strength: 0 };
+        const vortex = { x: 0, y: 0, z: 0, strength: 0 };
         let aspect = 1;
         let frame = 0;
         let last = performance.now();
@@ -322,13 +325,11 @@ export default function ParticleFlowBackground(
                             scale,
                 ]);
 
-                if (direction[1] < 0) {
-                    const t = -eye[1] / direction[1];
-                    vortex.x +=
-                        (eye[0] + direction[0] * t - vortex.x) * delta * 3;
-                    vortex.z +=
-                        (eye[2] + direction[2] * t - vortex.z) * delta * 3;
-                }
+                const t =
+                    -dot(eye, camera.forward) / dot(direction, camera.forward);
+                vortex.x += (eye[0] + direction[0] * t - vortex.x) * delta * 3;
+                vortex.y += (eye[1] + direction[1] * t - vortex.y) * delta * 3;
+                vortex.z += (eye[2] + direction[2] * t - vortex.z) * delta * 3;
             }
 
             vortex.strength +=
@@ -344,7 +345,8 @@ export default function ParticleFlowBackground(
             gl.blendFunc(gl.SRC_ALPHA, dark ? gl.ONE : gl.ONE_MINUS_SRC_ALPHA);
             gl.uniformMatrix4fv(uniforms.view, false, camera.matrix);
             gl.uniform1f(uniforms.time, seconds * 0.6 * settings.speed);
-            gl.uniform3f(uniforms.vortex, vortex.x, 0, vortex.z);
+            gl.uniform3f(uniforms.vortex, vortex.x, vortex.y, vortex.z);
+            gl.uniform3f(uniforms.vortexAxis, ...camera.forward);
             gl.uniform1f(uniforms.vortexStrength, vortex.strength);
             gl.uniform1f(uniforms.dark, dark ? 1 : 0);
             gl.drawArrays(gl.POINTS, 0, particleCount);
@@ -356,9 +358,16 @@ export default function ParticleFlowBackground(
         };
 
         const onPointerMove = (event: PointerEvent) => {
+            pointer.active = !(event.target as Element).closest?.(
+                '[data-background-inert]',
+            );
+
+            if (!pointer.active) {
+                return;
+            }
+
             pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
             pointer.y = 1 - (event.clientY / window.innerHeight) * 2;
-            pointer.active = true;
         };
 
         const onPointerLeave = () => {
@@ -383,14 +392,20 @@ export default function ParticleFlowBackground(
         }
 
         window.addEventListener('pointermove', onPointerMove);
-        document.addEventListener('pointerleave', onPointerLeave);
+        document.documentElement.addEventListener(
+            'pointerleave',
+            onPointerLeave,
+        );
         frame = requestAnimationFrame(loop);
 
         return () => {
             cancelAnimationFrame(frame);
             window.removeEventListener('resize', resize);
             window.removeEventListener('pointermove', onPointerMove);
-            document.removeEventListener('pointerleave', onPointerLeave);
+            document.documentElement.removeEventListener(
+                'pointerleave',
+                onPointerLeave,
+            );
         };
     }, [settingsKey]);
 

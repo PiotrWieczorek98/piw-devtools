@@ -23,7 +23,10 @@ export default function Tools() {
             <Head title="Tools" />
             <ParticleFlowBackground />
             <div className="relative min-h-screen text-foreground">
-                <header className="sticky top-0 z-10 border-b bg-background/60 backdrop-blur-md">
+                <header
+                    data-background-inert
+                    className="sticky top-0 z-10 border-b bg-background/60 backdrop-blur-md"
+                >
                     <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3">
                         <div className="flex flex-wrap items-center gap-6">
                             <h1 className="flex items-center gap-2 text-lg font-semibold tracking-wide">
@@ -60,7 +63,10 @@ export default function Tools() {
                     </div>
                 </header>
                 <main className="mx-auto max-w-7xl px-4 py-6">
-                    <div className="rounded-xl border bg-background/75 p-4 shadow-lg shadow-primary/5 backdrop-blur-md sm:p-6 dark:shadow-primary/10">
+                    <div
+                        data-background-inert
+                        className="rounded-xl border bg-background/75 p-4 shadow-lg shadow-primary/5 backdrop-blur-md sm:p-6 dark:shadow-primary/10"
+                    >
                         {tools.map(({ key, component: Tool }) => (
                             <section key={key} hidden={active !== key}>
                                 <Tool />
