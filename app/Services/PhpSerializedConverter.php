@@ -19,7 +19,7 @@ class PhpSerializedConverter
             // allowed_classes=false: pasted input must never instantiate application classes.
             $value = unserialize($input, ['allowed_classes' => false]);
         } catch (ErrorException $exception) {
-            throw new InvalidArgumentException($exception->getMessage(), previous: $exception);
+            throw new InvalidArgumentException($exception->getMessage(), $exception->getCode(), previous: $exception);
         }
 
         if ($value === false && $input !== serialize(false)) {
@@ -29,7 +29,7 @@ class PhpSerializedConverter
         try {
             return json_encode($this->normalize($value), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PRESERVE_ZERO_FRACTION);
         } catch (JsonException $exception) {
-            throw new InvalidArgumentException($exception->getMessage(), previous: $exception);
+            throw new InvalidArgumentException($exception->getMessage(), $exception->getCode(), previous: $exception);
         }
     }
 

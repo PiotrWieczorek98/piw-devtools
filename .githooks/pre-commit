@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.php' | grep -v -E '^(vendor|bootstrap/cache|storage)/')
+
+[ -z "$files" ] && exit 0
+
+run="sh -c"
+if docker compose ps --status running --services 2>/dev/null | grep -qx app; then
+    run="docker compose exec -T app sh -c"
+fi
+
+status=0
+
+$run "echo \"$files\" | xargs vendor/bin/rector process --dry-run --no-progress-bar" || status=1
+$run "echo \"$files\" | xargs vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --path-mode=intersection --show-progress=none" || status=1
+
+if [ $status -ne 0 ]; then
+    echo
+    echo "Code checks failed. Fix with: composer fix"
+fi
+
+exit $status

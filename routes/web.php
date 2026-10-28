@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'tools')->name('home');
 
-Route::controller(ToolController::class)->prefix('tools')->name('tools.')->group(function () {
+Route::controller(ToolController::class)->prefix('tools')->name('tools.')->group(function (): void {
     Route::post('pesel', 'pesel')->name('pesel');
     Route::post('nip', 'nip')->name('nip');
     Route::post('php-to-json', 'phpToJson')->name('php-to-json');
