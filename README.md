@@ -24,7 +24,7 @@ Open http://localhost:8000.
 docker compose -f compose.prod.yaml up -d --build
 ```
 
-Builds the assets, runs migrations and serves the app on `127.0.0.1:8000` for a reverse proxy. Set `APP_URL` in `.env` to the public URL.
+Builds the assets, runs migrations and serves the app on port 8000 for a reverse proxy. Set `APP_URL` in `.env` to the public URL.
 
 ## Commands
 
