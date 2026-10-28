@@ -74,6 +74,30 @@ class ToolControllerTest extends TestCase
         $this->postJson(route('tools.php-to-json'), ['input' => 'b:0;'])->assertOk()->assertExactJson(['json' => 'false']);
     }
 
+    public function test_converts_json_to_php_serialized_data(): void
+    {
+        $this->postJson(route('tools.json-to-php'), ['input' => '{"b":1,"5":"x","2":[1.0,true,null],"pl":"zażółć"}'])
+            ->assertOk()
+            ->assertExactJson(['php' => serialize(['b' => 1, 5 => 'x', 2 => [1.0, true, null], 'pl' => 'zażółć'])]);
+    }
+
+    public function test_json_with_class_marker_round_trips_to_a_serialized_object(): void
+    {
+        $php = $this->postJson(route('tools.json-to-php'), ['input' => '{"__class":"App\\\\Thing","secret":"a","items":[{"__class":"App\\\\Item","id":1}]}'])
+            ->assertOk()
+            ->json('php');
+
+        $this->assertSame('O:9:"App\Thing":2:{s:6:"secret";s:1:"a";s:5:"items";a:1:{i:0;O:8:"App\Item":1:{s:2:"id";i:1;}}}', $php);
+
+        $this->postJson(route('tools.php-to-json'), ['input' => $php])
+            ->assertExactJson(['json' => '{"__class":"App\\\\Thing","secret":"a","items":[{"__class":"App\\\\Item","id":1}]}']);
+    }
+
+    public function test_reports_invalid_json_input(): void
+    {
+        $this->postJson(route('tools.json-to-php'), ['input' => '{"a":'])->assertJsonValidationErrors(['input']);
+    }
+
     /**
      * @param  list<int>  $weights
      */

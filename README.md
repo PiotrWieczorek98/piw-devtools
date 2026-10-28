@@ -3,7 +3,7 @@
 Small set of developer tools in the browser.
 
 - JSON formatter with saved memory slots
-- PHP serialized → JSON
+- PHP serialized ⇄ JSON
 - Base64 encode / decode
 - PESEL and NIP generators
 

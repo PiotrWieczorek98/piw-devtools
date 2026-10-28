@@ -9,4 +9,5 @@ Route::controller(ToolController::class)->prefix('tools')->name('tools.')->group
     Route::post('pesel', 'pesel')->name('pesel');
     Route::post('nip', 'nip')->name('nip');
     Route::post('php-to-json', 'phpToJson')->name('php-to-json');
+    Route::post('json-to-php', 'jsonToPhp')->name('json-to-php');
 });

@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 const tools = [
     { key: 'json', label: 'JSON formatter', component: JsonFormatter },
-    { key: 'php', label: 'PHP → JSON', component: PhpToJson },
+    { key: 'php', label: 'PHP ⇄ JSON', component: PhpToJson },
     { key: 'base64', label: 'Base64', component: Base64Tool },
     { key: 'ids', label: 'PESEL & NIP', component: Identifiers },
 ];

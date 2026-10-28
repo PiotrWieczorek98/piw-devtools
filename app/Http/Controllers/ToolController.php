@@ -62,4 +62,22 @@ class ToolController extends Controller
 
         return response()->json(['json' => $json]);
     }
+
+    /**
+     * Convert JSON into a PHP serialized string.
+     */
+    public function jsonToPhp(Request $request, PhpSerializedConverter $converter): JsonResponse
+    {
+        $validated = $request->validate([
+            'input' => ['required', 'string'],
+        ]);
+
+        try {
+            $php = $converter->fromJson($validated['input']);
+        } catch (InvalidArgumentException $exception) {
+            throw ValidationException::withMessages(['input' => $exception->getMessage()]);
+        }
+
+        return response()->json(['php' => $php]);
+    }
 }

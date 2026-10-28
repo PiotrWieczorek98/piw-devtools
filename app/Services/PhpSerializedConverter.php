@@ -34,6 +34,45 @@ class PhpSerializedConverter
     }
 
     /**
+     * Convert JSON into a PHP serialized string; objects carrying "__class" become serialized objects of that class.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function fromJson(string $json): string
+    {
+        try {
+            $value = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException $exception) {
+            throw new InvalidArgumentException($exception->getMessage(), $exception->getCode(), previous: $exception);
+        }
+
+        return $this->serialize($value);
+    }
+
+    private function serialize(mixed $value): string
+    {
+        if (! is_array($value)) {
+            return serialize($value);
+        }
+
+        $class = $value['__class'] ?? null;
+
+        if (is_string($class)) {
+            unset($value['__class']);
+        } else {
+            $class = null;
+        }
+
+        $body = count($value).':{';
+
+        foreach ($value as $key => $item) {
+            $body .= serialize($key).$this->serialize($item);
+        }
+
+        return ($class === null ? 'a:' : 'O:'.strlen($class).':"'.$class.'":').$body.'}';
+    }
+
+    /**
      * Turn unserialized incomplete objects into arrays carrying their class name.
      */
     private function normalize(mixed $value): mixed
