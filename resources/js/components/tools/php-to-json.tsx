@@ -15,7 +15,6 @@ export default function PhpToJson() {
     const [indent, setIndent] = useState('    ');
     const input = http.data.input;
 
-    // Convert while typing, debounced; the cleanup cancels a request made stale by newer input.
     useEffect(() => {
         if (input.trim() === '') {
             return;
@@ -42,7 +41,6 @@ export default function PhpToJson() {
     return (
         <div className="grid gap-4 lg:grid-cols-2">
             <div className="grid content-start gap-2">
-                {/* min-h-8 matches the button toolbar above the output pane. */}
                 <Label htmlFor="php-input" className="min-h-8">
                     PHP serialized
                 </Label>

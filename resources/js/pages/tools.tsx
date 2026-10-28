@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 import AppearanceToggleTab from '@/components/appearance-tabs';
+import ParticleFlowBackground from '@/components/particle-flow-background';
 import Base64Tool from '@/components/tools/base64-tool';
 import Identifiers from '@/components/tools/identifiers';
 import JsonFormatter from '@/components/tools/json-formatter';
@@ -20,11 +21,12 @@ export default function Tools() {
     return (
         <>
             <Head title="Tools" />
-            <div className="min-h-screen bg-background text-foreground">
-                <header className="border-b">
+            <ParticleFlowBackground />
+            <div className="relative min-h-screen text-foreground">
+                <header className="sticky top-0 z-10 border-b bg-background/60 backdrop-blur-md">
                     <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3">
                         <div className="flex flex-wrap items-center gap-6">
-                            <h1 className="text-lg font-semibold">
+                            <h1 className="text-lg font-semibold tracking-wide">
                                 PIW Devtools
                             </h1>
                             <nav className="flex flex-wrap gap-1">
@@ -53,12 +55,13 @@ export default function Tools() {
                     </div>
                 </header>
                 <main className="mx-auto max-w-7xl px-4 py-6">
-                    {/* Keep every tool mounted so switching tabs keeps their input. */}
-                    {tools.map(({ key, component: Tool }) => (
-                        <section key={key} hidden={active !== key}>
-                            <Tool />
-                        </section>
-                    ))}
+                    <div className="rounded-xl border bg-background/75 p-4 shadow-lg shadow-fuchsia-500/5 backdrop-blur-md sm:p-6 dark:shadow-cyan-500/10">
+                        {tools.map(({ key, component: Tool }) => (
+                            <section key={key} hidden={active !== key}>
+                                <Tool />
+                            </section>
+                        ))}
+                    </div>
                 </main>
             </div>
         </>
