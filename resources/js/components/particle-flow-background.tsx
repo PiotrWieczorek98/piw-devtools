@@ -26,8 +26,8 @@ export const particleFlowDefaults = {
     /** How much each particle flickers, 0–1. */
     twinkle: 0.4,
     /** Stream colours, blended across the scene. */
-    colorA: '#00d9ff',
-    colorB: '#ff26d9',
+    colorA: '#09ed6a',
+    colorB: '#f80651',
     /** Strength of the swirl the pointer stirs up, 0 disables it. */
     pointerInfluence: 1,
     /** Distance from the camera to the centre of the scene. */
