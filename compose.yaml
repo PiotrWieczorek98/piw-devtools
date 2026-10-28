@@ -1,0 +1,14 @@
+services:
+    app:
+        build: .
+        image: piw-devtools
+        ports:
+            - '8000:8000'
+            - '5173:5173'
+        volumes:
+            - .:/app
+        environment:
+            SERVER_HOST: 0.0.0.0
+            # Makes laravel-vite-plugin listen on 0.0.0.0 while advertising localhost:5173
+            LARAVEL_SAIL: 1
+        command: sh -c "composer install && npm install && composer run dev"
