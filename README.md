@@ -18,6 +18,14 @@ docker compose up
 
 Open http://localhost:8000.
 
+## Production
+
+```sh
+docker compose -f compose.prod.yaml up -d --build
+```
+
+Builds the assets, runs migrations and serves the app on `127.0.0.1:8000` for a reverse proxy. Set `APP_URL` in `.env` to the public URL.
+
 ## Commands
 
 Run inside the container (`docker compose exec app sh`):
