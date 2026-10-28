@@ -98,6 +98,23 @@ class ToolControllerTest extends TestCase
         $this->postJson(route('tools.json-to-php'), ['input' => '{"a":'])->assertJsonValidationErrors(['input']);
     }
 
+    public function test_rejects_oversized_converter_input(): void
+    {
+        $input = str_repeat('a', 1_000_001);
+
+        $this->postJson(route('tools.php-to-json'), ['input' => $input])->assertJsonValidationErrors(['input']);
+        $this->postJson(route('tools.json-to-php'), ['input' => $input])->assertJsonValidationErrors(['input']);
+    }
+
+    public function test_rate_limits_tool_requests(): void
+    {
+        for ($i = 0; $i < 120; $i++) {
+            $this->postJson(route('tools.nip'), ['count' => 1])->assertOk();
+        }
+
+        $this->postJson(route('tools.nip'), ['count' => 1])->assertTooManyRequests();
+    }
+
     /**
      * @param  list<int>  $weights
      */

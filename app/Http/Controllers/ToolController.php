@@ -51,7 +51,7 @@ class ToolController extends Controller
     public function phpToJson(Request $request, PhpSerializedConverter $converter): JsonResponse
     {
         $validated = $request->validate([
-            'input' => ['required', 'string'],
+            'input' => ['required', 'string', 'max:1000000'],
         ]);
 
         try {
@@ -69,7 +69,7 @@ class ToolController extends Controller
     public function jsonToPhp(Request $request, PhpSerializedConverter $converter): JsonResponse
     {
         $validated = $request->validate([
-            'input' => ['required', 'string'],
+            'input' => ['required', 'string', 'max:1000000'],
         ]);
 
         try {
