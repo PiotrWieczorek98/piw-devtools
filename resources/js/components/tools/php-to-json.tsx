@@ -7,12 +7,14 @@ import {
     textareaClassName,
 } from '@/components/tools/shared';
 import { Label } from '@/components/ui/label';
+import { useLinkedHeight } from '@/hooks/use-linked-height';
 import { formatJson } from '@/lib/json-format';
 import { phpToJson } from '@/routes/tools';
 
 export default function PhpToJson() {
+    const [inputRef, outputRef] = useLinkedHeight<HTMLTextAreaElement>();
     const http = useHttp<{ input: string }, { json: string }>({ input: '' });
-    const [indent, setIndent] = useState('    ');
+    const [indent, setIndent] = useState('  ');
     const input = http.data.input;
 
     useEffect(() => {
@@ -45,6 +47,7 @@ export default function PhpToJson() {
                     PHP serialized
                 </Label>
                 <textarea
+                    ref={inputRef}
                     id="php-input"
                     className={textareaClassName}
                     spellCheck={false}
@@ -64,6 +67,7 @@ export default function PhpToJson() {
                     </div>
                 </div>
                 <textarea
+                    ref={outputRef}
                     id="php-output"
                     className={textareaClassName}
                     spellCheck={false}

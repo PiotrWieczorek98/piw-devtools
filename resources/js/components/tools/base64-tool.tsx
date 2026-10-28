@@ -4,6 +4,7 @@ import { CopyButton, textareaClassName } from '@/components/tools/shared';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { useLinkedHeight } from '@/hooks/use-linked-height';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { decodeBase64, encodeBase64 } from '@/lib/base64';
 
@@ -28,6 +29,7 @@ function convert(
 }
 
 export default function Base64Tool() {
+    const [inputRef, outputRef] = useLinkedHeight<HTMLTextAreaElement>();
     const [input, setInput] = useState('');
     const [mode, setMode] = useState('encode');
     const [urlSafe, setUrlSafe] = useState(false);
@@ -74,6 +76,7 @@ export default function Base64Tool() {
                     </div>
                 </div>
                 <textarea
+                    ref={inputRef}
                     id="base64-input"
                     className={textareaClassName}
                     spellCheck={false}
@@ -107,6 +110,7 @@ export default function Base64Tool() {
                     </div>
                 </div>
                 <textarea
+                    ref={outputRef}
                     id="base64-output"
                     className={textareaClassName}
                     spellCheck={false}
