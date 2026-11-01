@@ -25,7 +25,7 @@ export default function Tools() {
             <div className="relative min-h-screen text-foreground">
                 <header
                     data-background-inert
-                    className="sticky top-0 z-10 border-b bg-background/60 backdrop-blur-md"
+                    className="sticky top-0 z-10 border-b bg-background/90"
                 >
                     <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3">
                         <div className="flex flex-wrap items-center gap-6">
@@ -65,7 +65,7 @@ export default function Tools() {
                 <main className="mx-auto max-w-7xl px-4 py-6">
                     <div
                         data-background-inert
-                        className="rounded-xl border bg-background/75 p-4 shadow-lg shadow-primary/5 backdrop-blur-md sm:p-6 dark:shadow-primary/10"
+                        className="rounded-xl border bg-background/90 p-4 shadow-lg shadow-primary/5 sm:p-6 dark:shadow-primary/10"
                     >
                         {tools.map(({ key, component: Tool }) => (
                             <section key={key} hidden={active !== key}>
