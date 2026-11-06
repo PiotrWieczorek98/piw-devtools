@@ -1,5 +1,5 @@
 // Credit: https://usehooks-ts.com/
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export type CopiedValue = string | null;
 export type CopyFn = (text: string) => Promise<boolean>;
@@ -7,6 +7,9 @@ export type UseClipboardReturn = [CopiedValue, CopyFn];
 
 export function useClipboard(): UseClipboardReturn {
     const [copiedText, setCopiedText] = useState<CopiedValue>(null);
+    const resetTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+    useEffect(() => () => clearTimeout(resetTimeout.current), []);
 
     const copy: CopyFn = async (text) => {
         if (!navigator?.clipboard) {
@@ -18,6 +21,8 @@ export function useClipboard(): UseClipboardReturn {
         try {
             await navigator.clipboard.writeText(text);
             setCopiedText(text);
+            clearTimeout(resetTimeout.current);
+            resetTimeout.current = setTimeout(() => setCopiedText(null), 2000);
 
             return true;
         } catch (error) {
