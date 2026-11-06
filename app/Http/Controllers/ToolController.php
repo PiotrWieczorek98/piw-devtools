@@ -50,17 +50,7 @@ class ToolController extends Controller
      */
     public function phpToJson(Request $request, PhpSerializedConverter $converter): JsonResponse
     {
-        $validated = $request->validate([
-            'input' => ['required', 'string', 'max:1000000'],
-        ]);
-
-        try {
-            $json = $converter->toJson($validated['input']);
-        } catch (InvalidArgumentException $exception) {
-            throw ValidationException::withMessages(['input' => $exception->getMessage()]);
-        }
-
-        return response()->json(['json' => $json]);
+        return response()->json(['json' => $this->convertInput($request, $converter->toJson(...))]);
     }
 
     /**
@@ -68,16 +58,24 @@ class ToolController extends Controller
      */
     public function jsonToPhp(Request $request, PhpSerializedConverter $converter): JsonResponse
     {
+        return response()->json(['php' => $this->convertInput($request, $converter->fromJson(...))]);
+    }
+
+    /**
+     * Validate the "input" field and run it through the converter, reporting conversion errors as validation errors.
+     *
+     * @param  callable(string): string  $convert
+     */
+    private function convertInput(Request $request, callable $convert): string
+    {
         $validated = $request->validate([
             'input' => ['required', 'string', 'max:1000000'],
         ]);
 
         try {
-            $php = $converter->fromJson($validated['input']);
+            return $convert($validated['input']);
         } catch (InvalidArgumentException $exception) {
             throw ValidationException::withMessages(['input' => $exception->getMessage()]);
         }
-
-        return response()->json(['php' => $php]);
     }
 }

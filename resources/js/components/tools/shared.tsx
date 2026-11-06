@@ -24,8 +24,22 @@ export function CopyButton({
             disabled={text === ''}
             onClick={() => void copy(text)}
         >
-            {copied ? <Check /> : <Copy />}
-            {copied ? 'Copied' : label}
+            <span className="grid justify-items-center gap-[inherit] *:col-start-1 *:row-start-1">
+                <span
+                    key={copied ? 'copied' : 'copy'}
+                    className="inline-flex animate-in items-center gap-[inherit] duration-200 zoom-in-75 fade-in motion-reduce:animate-none"
+                >
+                    {copied ? <Check /> : <Copy />}
+                    {copied ? 'Copied' : label}
+                </span>
+                <span
+                    aria-hidden
+                    className="invisible inline-flex items-center gap-[inherit]"
+                >
+                    {copied ? <Copy /> : <Check />}
+                    {copied ? label : 'Copied'}
+                </span>
+            </span>
         </Button>
     );
 }

@@ -18,7 +18,7 @@ class PhpSerializedConverter
         try {
             // allowed_classes=false: pasted input must never instantiate application classes.
             $value = unserialize($input, ['allowed_classes' => false]);
-        } catch (ErrorException $exception) {
+        } catch (ErrorException $exception) { // @phpstan-ignore catch.neverThrown (Laravel turns the unserialize() warning into an ErrorException)
             throw new InvalidArgumentException($exception->getMessage(), $exception->getCode(), previous: $exception);
         }
 

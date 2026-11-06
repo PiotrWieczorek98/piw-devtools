@@ -1,24 +1,24 @@
 import { useSyncExternalStore } from 'react';
 
-export type ResolvedAppearance = 'light' | 'dark';
-export type Appearance = ResolvedAppearance | 'system';
+export type Appearance = 'light' | 'dark' | 'system';
 
 export type UseAppearanceReturn = {
     readonly appearance: Appearance;
-    readonly resolvedAppearance: ResolvedAppearance;
     readonly updateAppearance: (mode: Appearance) => void;
 };
 
 const listeners = new Set<() => void>();
 let currentAppearance: Appearance = 'system';
 
-const prefersDark = (): boolean => {
+const mediaQuery = (): MediaQueryList | null => {
     if (typeof window === 'undefined') {
-        return false;
+        return null;
     }
 
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return window.matchMedia('(prefers-color-scheme: dark)');
 };
+
+const prefersDark = (): boolean => mediaQuery()?.matches ?? false;
 
 const setCookie = (name: string, value: string, days = 365): void => {
     if (typeof document === 'undefined') {
@@ -60,14 +60,6 @@ const subscribe = (callback: () => void) => {
 
 const notify = (): void => listeners.forEach((listener) => listener());
 
-const mediaQuery = (): MediaQueryList | null => {
-    if (typeof window === 'undefined') {
-        return null;
-    }
-
-    return window.matchMedia('(prefers-color-scheme: dark)');
-};
-
 const handleSystemThemeChange = (): void => applyTheme(currentAppearance);
 
 export function initializeTheme(): void {
@@ -94,10 +86,6 @@ export function useAppearance(): UseAppearanceReturn {
         () => 'system',
     );
 
-    const resolvedAppearance: ResolvedAppearance = isDarkMode(appearance)
-        ? 'dark'
-        : 'light';
-
     const updateAppearance = (mode: Appearance): void => {
         currentAppearance = mode;
 
@@ -111,5 +99,5 @@ export function useAppearance(): UseAppearanceReturn {
         notify();
     };
 
-    return { appearance, resolvedAppearance, updateAppearance } as const;
+    return { appearance, updateAppearance } as const;
 }

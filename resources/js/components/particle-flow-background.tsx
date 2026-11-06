@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react';
 
 const FOV = Math.PI / 4;
 
-export const particleFlowDefaults = {
+/** Tuning values, baked into the shaders when they compile. */
+const settings = {
     /** Number of streams flowing through the scene. */
     strands: 100,
     /** Particles along each stream. */
@@ -36,14 +37,12 @@ export const particleFlowDefaults = {
     orbitSpeed: 0.025,
 };
 
-export type ParticleFlowSettings = typeof particleFlowDefaults;
-
 const glFloat = (value: number) => value.toFixed(4);
 
 const glColor = (hex: string) =>
     `vec3(${[1, 3, 5].map((i) => glFloat(parseInt(hex.slice(i, i + 2), 16) / 255)).join(', ')})`;
 
-const vertexShader = (settings: ParticleFlowSettings) => `#version 300 es
+const vertexShader = `#version 300 es
 in vec4 aSeed;
 uniform mat4 uProj;
 uniform mat4 uView;
@@ -93,7 +92,7 @@ void main() {
     gl_PointSize = clamp((1.2 + vGlow * 2.5 + pull * 2.0) * uPixelRatio * ${glFloat(22 * settings.particleSize)} / depth, 1.0, ${glFloat(settings.maxParticleSize)});
 }`;
 
-const fragmentShader = (settings: ParticleFlowSettings) => `#version 300 es
+const fragmentShader = `#version 300 es
 precision highp float;
 in float vAlpha;
 in float vGlow;
@@ -192,17 +191,10 @@ function compile(gl: WebGL2RenderingContext, type: number, source: string) {
     return shader;
 }
 
-export default function ParticleFlowBackground(
-    overrides: Partial<ParticleFlowSettings>,
-) {
+export default function ParticleFlowBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const settingsKey = JSON.stringify({
-        ...particleFlowDefaults,
-        ...overrides,
-    });
 
     useEffect(() => {
-        const settings: ParticleFlowSettings = JSON.parse(settingsKey);
         const canvas = canvasRef.current;
         const gl = canvas?.getContext('webgl2', {
             antialias: false,
@@ -214,13 +206,10 @@ export default function ParticleFlowBackground(
         }
 
         const program = gl.createProgram();
+        gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, vertexShader));
         gl.attachShader(
             program,
-            compile(gl, gl.VERTEX_SHADER, vertexShader(settings)),
-        );
-        gl.attachShader(
-            program,
-            compile(gl, gl.FRAGMENT_SHADER, fragmentShader(settings)),
+            compile(gl, gl.FRAGMENT_SHADER, fragmentShader),
         );
         gl.linkProgram(program);
         gl.useProgram(program);
@@ -407,7 +396,7 @@ export default function ParticleFlowBackground(
                 onPointerLeave,
             );
         };
-    }, [settingsKey]);
+    }, []);
 
     return (
         <canvas

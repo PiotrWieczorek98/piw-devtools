@@ -30,7 +30,7 @@ export default function PeselGenerator() {
     useEffect(() => generate(), []);
 
     return (
-        <div className="grid gap-6 sm:grid-cols-[12rem_1fr]">
+        <div className="grid gap-6 sm:grid-cols-[14rem_1fr]">
             <form onSubmit={generate} className="space-y-4">
                 <div className="grid gap-2">
                     <Label htmlFor="pesel-count">How many</Label>

@@ -1,10 +1,12 @@
 import { CopyButton } from '@/components/tools/shared';
 
 // Verified against the MF VAT white list (wl-api.mf.gov.pl) on 2026-10-28; names as registered.
+// prettier-ignore
 const companies = [
     { nip: '7740001454', regon: '610188201', name: 'ORLEN S.A.' },
     { nip: '5250007738', regon: '016298263', name: 'PKO Bank Polski S.A.' },
     { nip: '5260251049', regon: '010001345', name: 'PZU S.A.' },
+    { nip: '5222357343', regon: '010001345', name: 'Pluxee Polska Sp. z o.o.' },
     { nip: '6920000013', regon: '390021764', name: 'KGHM Polska Miedź S.A.' },
     { nip: '5272468122', regon: '140086881', name: 'IPOPEMA Securities S.A.' },
     { nip: '5252674798', regon: '365331553', name: 'Allegro sp. z o.o.' },

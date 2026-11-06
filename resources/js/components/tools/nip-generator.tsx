@@ -30,7 +30,7 @@ export default function NipGenerator() {
     );
 
     return (
-        <div className="grid gap-6 sm:grid-cols-[12rem_1fr]">
+        <div className="grid gap-6 sm:grid-cols-[14rem_1fr]">
             <form onSubmit={generate} className="space-y-4">
                 <div className="grid gap-2">
                     <Label htmlFor="nip-count">How many</Label>
@@ -54,7 +54,9 @@ export default function NipGenerator() {
                             setDashed(checked === true)
                         }
                     />
-                    <Label htmlFor="nip-dashed">Format as XXX-XXX-XX-XX</Label>
+                    <Label htmlFor="nip-dashed" className="whitespace-nowrap">
+                        Format as XXX-XXX-XX-XX
+                    </Label>
                 </div>
                 <Button type="submit" disabled={http.processing}>
                     Generate
