@@ -2,8 +2,7 @@ import { useHttp } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import InputError from '@/components/input-error';
-import { NumberList } from '@/components/tools/shared';
-import { Button } from '@/components/ui/button';
+import { GenerateButton, NumberList } from '@/components/tools/shared';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,7 +10,7 @@ import { nip } from '@/routes/tools';
 
 export default function NipGenerator() {
     const http = useHttp<{ count: number }, { numbers: string[] }>({
-        count: 10,
+        count: 5,
     });
     const [dashed, setDashed] = useState(false);
 
@@ -58,9 +57,7 @@ export default function NipGenerator() {
                         Format as XXX-XXX-XX-XX
                     </Label>
                 </div>
-                <Button type="submit" disabled={http.processing}>
-                    Generate
-                </Button>
+                <GenerateButton processing={http.processing} />
             </form>
             <NumberList numbers={numbers} />
         </div>

@@ -2,8 +2,7 @@ import { useHttp } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import { useEffect } from 'react';
 import InputError from '@/components/input-error';
-import { NumberList } from '@/components/tools/shared';
-import { Button } from '@/components/ui/button';
+import { GenerateButton, NumberList } from '@/components/tools/shared';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -19,7 +18,7 @@ export default function PeselGenerator() {
     const http = useHttp<
         { count: number; birth_date: string; sex: string },
         { numbers: string[] }
-    >({ count: 10, birth_date: '', sex: 'any' });
+    >({ count: 5, birth_date: '', sex: 'any' });
 
     const generate = (event?: FormEvent) => {
         event?.preventDefault();
@@ -79,9 +78,7 @@ export default function PeselGenerator() {
                     </Select>
                     <InputError message={http.errors.sex} />
                 </div>
-                <Button type="submit" disabled={http.processing}>
-                    Generate
-                </Button>
+                <GenerateButton processing={http.processing} />
             </form>
             <NumberList numbers={http.response?.numbers ?? []} />
         </div>
