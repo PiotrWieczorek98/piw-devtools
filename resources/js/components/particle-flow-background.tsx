@@ -105,8 +105,9 @@ void main() {
     float disc = exp(-r * r * 4.0) * (1.0 - step(1.0, r));
     vec3 neon = mix(${glColor(settings.colorA)}, ${glColor(settings.colorB)}, vHue);
     vec3 color = mix(neon, vec3(1.0), vGlow * 0.5 * uDark);
-    color = mix(color * 0.65, color, uDark);
-    outColor = vec4(color, disc * vAlpha * (0.55 + vGlow * 0.45) * ${glFloat(settings.opacity)});
+    // On a light background, stacked opaque neon turns muddy; faint tints read as soft colour instead.
+    float lightFade = mix(0.45, 1.0, uDark);
+    outColor = vec4(color, disc * vAlpha * (0.55 + vGlow * 0.45) * lightFade * ${glFloat(settings.opacity)});
 }`;
 
 type Vec3 = [number, number, number];
@@ -327,7 +328,7 @@ export default function ParticleFlowBackground() {
             const dark = document.documentElement.classList.contains('dark');
             const background: Vec3 = dark
                 ? [6 / 255, 4 / 255, 18 / 255]
-                : [250 / 255, 250 / 255, 1];
+                : [224 / 255, 220 / 255, 240 / 255];
 
             gl.clearColor(...background, 1);
             gl.clear(gl.COLOR_BUFFER_BIT);
@@ -399,10 +400,16 @@ export default function ParticleFlowBackground() {
     }, []);
 
     return (
-        <canvas
-            ref={canvasRef}
-            aria-hidden="true"
-            className="pointer-events-none fixed inset-0 size-full bg-[#fafaff] dark:bg-[#060412]"
-        />
+        <>
+            <canvas
+                ref={canvasRef}
+                aria-hidden="true"
+                className="pointer-events-none fixed inset-0 size-full bg-[#e0dcf0] dark:bg-[#060412]"
+            />
+            <div
+                aria-hidden="true"
+                className="neon-wash pointer-events-none fixed inset-0 dark:hidden"
+            />
+        </>
     );
 }
