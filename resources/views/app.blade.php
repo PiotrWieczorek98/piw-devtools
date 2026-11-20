@@ -22,7 +22,7 @@
         {{-- Inline style to set the HTML background color based on our theme in app.css --}}
         <style>
             html {
-                background-color: #e0dcf0;
+                background-color: #e8e5de;
             }
 
             html.dark {

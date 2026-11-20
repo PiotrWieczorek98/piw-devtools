@@ -82,7 +82,7 @@ function Memory({ onLoad }: { onLoad: (text: string) => void }) {
                 <div>
                     <h2 className="font-medium">Memory</h2>
                     <p className="text-sm text-muted-foreground">
-                        Saved in this browser, kept between visits.
+                        Saved in this browser between visits
                     </p>
                 </div>
                 <Button

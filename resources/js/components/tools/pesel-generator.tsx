@@ -47,7 +47,7 @@ export default function PeselGenerator() {
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="pesel-birth-date">
-                        Birth date (empty = random)
+                        Birth date, random if empty
                     </Label>
                     <Input
                         id="pesel-birth-date"

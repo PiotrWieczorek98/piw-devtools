@@ -6,18 +6,50 @@ import { useClipboard } from '@/hooks/use-clipboard';
 import { cn } from '@/lib/utils';
 
 export const textareaClassName =
-    'min-h-80 w-full rounded-md border border-input bg-transparent p-3 font-mono text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive';
+    'min-h-80 w-full rounded-md border border-input bg-white/50 p-3 dark:bg-transparent font-mono text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive';
 
 export function CopyButton({
     text,
     label = 'Copy',
+    iconOnly = false,
 }: {
     text: string;
     label?: string;
+    /** Compact square button for dense tables; the label moves to aria-label. */
+    iconOnly?: boolean;
 }) {
     const [copiedText, copy] = useClipboard();
     const [wasClicked, setWasClicked] = useState(false);
     const copied = copiedText === text && text !== '';
+
+    if (iconOnly) {
+        return (
+            <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="size-8 shrink-0"
+                aria-label={copied ? 'Copied' : `${label} ${text}`}
+                title={copied ? 'Copied' : label}
+                disabled={text === ''}
+                onClick={() => {
+                    setWasClicked(true);
+                    void copy(text);
+                }}
+            >
+                <span
+                    key={copied ? 'copied' : 'copy'}
+                    className={cn(
+                        'inline-flex',
+                        wasClicked &&
+                            'animate-in duration-200 zoom-in-75 fade-in motion-reduce:animate-none',
+                    )}
+                >
+                    {copied ? <Check /> : <Copy />}
+                </span>
+            </Button>
+        );
+    }
 
     return (
         <Button
