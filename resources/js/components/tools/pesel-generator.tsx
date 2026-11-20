@@ -12,6 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { describePesel } from '@/lib/pesel';
 import { pesel } from '@/routes/tools';
 
 export default function PeselGenerator() {
@@ -80,7 +81,16 @@ export default function PeselGenerator() {
                 </div>
                 <GenerateButton processing={http.processing} />
             </form>
-            <NumberList numbers={http.response?.numbers ?? []} />
+            <NumberList
+                numbers={http.response?.numbers ?? []}
+                describe={(number) => {
+                    const details = describePesel(number);
+
+                    return details
+                        ? `${details.birthDate} · ${details.sex}`
+                        : '';
+                }}
+            />
         </div>
     );
 }

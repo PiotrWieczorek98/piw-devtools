@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import InputError from '@/components/input-error';
 import { CopyButton, textareaClassName } from '@/components/tools/shared';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useLinkedHeight } from '@/hooks/use-linked-height';
+import { useStoredState } from '@/hooks/use-stored-state';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { decodeBase64, encodeBase64 } from '@/lib/base64';
 
@@ -30,9 +30,9 @@ function convert(
 
 export default function Base64Tool() {
     const [inputRef, outputRef] = useLinkedHeight<HTMLTextAreaElement>();
-    const [input, setInput] = useState('');
-    const [mode, setMode] = useState('encode');
-    const [urlSafe, setUrlSafe] = useState(false);
+    const [input, setInput] = useStoredState('base64-input', '');
+    const [mode, setMode] = useStoredState('base64-mode', 'encode');
+    const [urlSafe, setUrlSafe] = useStoredState('base64-url-safe', false);
 
     const { output, error } =
         input === '' ? { output: '' } : convert(input, mode, urlSafe);

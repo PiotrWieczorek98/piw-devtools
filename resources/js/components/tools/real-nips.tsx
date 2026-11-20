@@ -1,4 +1,4 @@
-import { CopyButton } from '@/components/tools/shared';
+import { CopyValue } from '@/components/tools/shared';
 
 // Verified against the MF VAT white list (wl-api.mf.gov.pl) on 2026-10-28; names as registered.
 // prettier-ignore
@@ -29,24 +29,20 @@ export default function RealNips() {
                 <tbody className="divide-y">
                     {companies.map((company) => (
                         <tr key={company.nip}>
-                            <td className="px-3 py-1.5 whitespace-nowrap">
-                                {company.name}
+                            <td className="px-3 py-1.5">
+                                <CopyValue text={company.name} />
                             </td>
                             <td className="px-3 py-1.5">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-mono">
-                                        {company.nip}
-                                    </span>
-                                    <CopyButton text={company.nip} iconOnly />
-                                </div>
+                                <CopyValue
+                                    text={company.nip}
+                                    className="font-mono"
+                                />
                             </td>
                             <td className="px-3 py-1.5">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-mono">
-                                        {company.regon}
-                                    </span>
-                                    <CopyButton text={company.regon} iconOnly />
-                                </div>
+                                <CopyValue
+                                    text={company.regon}
+                                    className="font-mono"
+                                />
                             </td>
                         </tr>
                     ))}

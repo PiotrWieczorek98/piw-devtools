@@ -67,11 +67,11 @@
     --border: #d9d4ca;
     --input: #cdc7bb;
     --ring: #b8164a;
-    /* Background glyph inks: deeper than the UI accents so they read on paper. */
-    --glyph-a: #006b3c;
-    --glyph-b: #c8104f;
-    --glyph-c: #1d4ed8;
-    --glyph-alpha: 1;
+    /* Background glyph inks for paper: deep green leads, raspberry and warm black ink support. Above 1 lifts the faint glyphs. */
+    --glyph-a: #0b6b3a;
+    --glyph-b: #a8123f;
+    --glyph-c: #2b2620;
+    --glyph-alpha: 1.5;
     --radius: 0.625rem;
 }
 

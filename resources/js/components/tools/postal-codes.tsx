@@ -1,4 +1,4 @@
-import { CopyButton } from '@/components/tools/shared';
+import { CopyValue } from '@/components/tools/shared';
 
 // shortcut: city hall postal codes from memory, not checked against the Poczta Polska register; verify before relying on one.
 // prettier-ignore
@@ -29,25 +29,19 @@ export default function PostalCodes() {
                 <tbody className="divide-y">
                     {places.map((place) => (
                         <tr key={place.code}>
-                            <td className="px-3 py-1.5">{place.city}</td>
                             <td className="px-3 py-1.5">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-mono">
-                                        {place.code}
-                                    </span>
-                                    <CopyButton text={place.code} iconOnly />
-                                </div>
+                                <CopyValue text={place.city} />
                             </td>
                             <td className="px-3 py-1.5">
-                                <div className="flex items-center justify-between gap-2">
-                                    <span className="whitespace-nowrap">
-                                        {place.code} {place.city}
-                                    </span>
-                                    <CopyButton
-                                        text={`${place.code} ${place.city}`}
-                                        iconOnly
-                                    />
-                                </div>
+                                <CopyValue
+                                    text={place.code}
+                                    className="font-mono"
+                                />
+                            </td>
+                            <td className="px-3 py-1.5">
+                                <CopyValue
+                                    text={`${place.code} ${place.city}`}
+                                />
                             </td>
                         </tr>
                     ))}

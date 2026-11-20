@@ -37,7 +37,7 @@ export default function AppearanceToggleTab({
                     )}
                 >
                     <Icon className="size-4" />
-                    {label}
+                    <span className="max-sm:sr-only">{label}</span>
                 </button>
             ))}
         </div>

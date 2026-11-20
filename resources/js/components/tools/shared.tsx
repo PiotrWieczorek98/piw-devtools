@@ -1,5 +1,6 @@
 import { Check, Copy, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useClipboard } from '@/hooks/use-clipboard';
@@ -11,45 +12,13 @@ export const textareaClassName =
 export function CopyButton({
     text,
     label = 'Copy',
-    iconOnly = false,
 }: {
     text: string;
     label?: string;
-    /** Compact square button for dense tables; the label moves to aria-label. */
-    iconOnly?: boolean;
 }) {
     const [copiedText, copy] = useClipboard();
     const [wasClicked, setWasClicked] = useState(false);
     const copied = copiedText === text && text !== '';
-
-    if (iconOnly) {
-        return (
-            <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="size-8 shrink-0"
-                aria-label={copied ? 'Copied' : `${label} ${text}`}
-                title={copied ? 'Copied' : label}
-                disabled={text === ''}
-                onClick={() => {
-                    setWasClicked(true);
-                    void copy(text);
-                }}
-            >
-                <span
-                    key={copied ? 'copied' : 'copy'}
-                    className={cn(
-                        'inline-flex',
-                        wasClicked &&
-                            'animate-in duration-200 zoom-in-75 fade-in motion-reduce:animate-none',
-                    )}
-                >
-                    {copied ? <Check /> : <Copy />}
-                </span>
-            </Button>
-        );
-    }
 
     return (
         <Button
@@ -144,7 +113,51 @@ export function IndentToggle({
     );
 }
 
-export function NumberList({ numbers }: { numbers: string[] }) {
+/**
+ * A value that copies itself on click. Replaces per-row copy buttons in lists
+ * and tables; the copy icon appears on hover and turns into a tick once copied.
+ */
+export function CopyValue({
+    text,
+    children,
+    className,
+}: {
+    text: string;
+    children?: ReactNode;
+    className?: string;
+}) {
+    const [copiedText, copy] = useClipboard();
+    const copied = copiedText === text;
+
+    return (
+        <button
+            type="button"
+            title="Click to copy"
+            aria-label={copied ? `Copied ${text}` : `Copy ${text}`}
+            onClick={() => void copy(text)}
+            className={cn(
+                'group -mx-2 inline-flex items-center gap-2 rounded-md px-2 py-1 text-left whitespace-nowrap transition-colors outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                className,
+            )}
+        >
+            {children ?? text}
+            {copied ? (
+                <Check className="size-3.5 shrink-0 text-green-700 dark:text-green-400" />
+            ) : (
+                <Copy className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+            )}
+        </button>
+    );
+}
+
+export function NumberList({
+    numbers,
+    describe,
+}: {
+    numbers: string[];
+    /** Optional muted note shown after each number, e.g. what a PESEL encodes. */
+    describe?: (number: string) => string;
+}) {
     return (
         <div className="space-y-2">
             <div className="flex justify-end">
@@ -154,10 +167,14 @@ export function NumberList({ numbers }: { numbers: string[] }) {
                 {numbers.map((number, index) => (
                     <li
                         key={`${index}-${number}`}
-                        className="flex items-center justify-between px-3 py-1.5"
+                        className="flex items-center justify-between gap-4 px-3 py-1"
                     >
-                        <span className="font-mono">{number}</span>
-                        <CopyButton text={number} />
+                        <CopyValue text={number} className="font-mono" />
+                        {describe && (
+                            <span className="font-mono text-sm text-muted-foreground">
+                                {describe(number)}
+                            </span>
+                        )}
                     </li>
                 ))}
             </ul>

@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useLinkedHeight } from '@/hooks/use-linked-height';
+import { useStoredState } from '@/hooks/use-stored-state';
+import { locateJsonError } from '@/lib/json-error';
 import { formatJson } from '@/lib/json-format';
 import { cn } from '@/lib/utils';
 
@@ -154,12 +156,29 @@ function Memory({ onLoad }: { onLoad: (text: string) => void }) {
 
 export default function JsonFormatter() {
     const [inputRef, outputRef] = useLinkedHeight<HTMLTextAreaElement>();
-    const [input, setInput] = useState('');
-    const [indent, setIndent] = useState('  ');
+    const [input, setInput] = useStoredState('json-formatter-input', '');
+    const [indent, setIndent] = useStoredState('json-formatter-indent', '  ');
 
     const isEmpty = input.trim() === '';
     const error = isEmpty ? undefined : validate(input);
+    const errorLocation = error ? locateJsonError(input) : null;
     const output = isEmpty || error ? '' : formatJson(input, indent);
+
+    const showError = () => {
+        const textarea = inputRef.current;
+
+        if (!textarea || !errorLocation) {
+            return;
+        }
+
+        textarea.focus();
+        textarea.setSelectionRange(
+            errorLocation.offset,
+            errorLocation.offset + 1,
+        );
+        // Keep a couple of lines of context above the error (20px line height).
+        textarea.scrollTop = Math.max(0, (errorLocation.line - 3) * 20);
+    };
 
     return (
         <div className="grid gap-8">
@@ -198,7 +217,23 @@ export default function JsonFormatter() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                     />
-                    <InputError message={error && `Invalid JSON: ${error}`} />
+                    {errorLocation ? (
+                        <p className="flex flex-wrap items-center gap-x-2 text-sm text-red-600 dark:text-red-400">
+                            Invalid JSON at line {errorLocation.line}, column{' '}
+                            {errorLocation.column}
+                            <button
+                                type="button"
+                                onClick={showError}
+                                className="rounded-sm underline underline-offset-4 outline-none hover:no-underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            >
+                                Show in input
+                            </button>
+                        </p>
+                    ) : (
+                        <InputError
+                            message={error && `Invalid JSON: ${error}`}
+                        />
+                    )}
                     {output && (
                         <p className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
                             <CircleCheck className="size-4" /> Valid JSON

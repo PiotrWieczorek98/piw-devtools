@@ -1,6 +1,6 @@
 import { useHttp } from '@inertiajs/react';
 import { ArrowLeftRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import InputError from '@/components/input-error';
 import {
     CopyButton,
@@ -10,6 +10,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useLinkedHeight } from '@/hooks/use-linked-height';
+import {
+    readStored,
+    useStoredState,
+    writeStored,
+} from '@/hooks/use-stored-state';
 import { formatJson } from '@/lib/json-format';
 import { jsonToPhp, phpToJson } from '@/routes/tools';
 
@@ -18,8 +23,23 @@ export default function PhpToJson() {
     const http = useHttp<{ input: string }, { json?: string; php?: string }>({
         input: '',
     });
-    const [indent, setIndent] = useState('  ');
-    const [toJson, setToJson] = useState(true);
+    const [indent, setIndent] = useStoredState('php-json-indent', '  ');
+    const [toJson, setToJson] = useStoredState('php-json-to-json', true);
+
+    const setInput = (value: string) => {
+        http.setData('input', value);
+        writeStored('php-json-input', value);
+    };
+
+    // The input lives in the useHttp form, so it is restored by hand after hydration.
+    useLayoutEffect(() => {
+        const saved = readStored<string>('php-json-input');
+
+        if (saved) {
+            http.setData('input', saved);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     const input = http.data.input;
 
     useEffect(() => {
@@ -48,7 +68,7 @@ export default function PhpToJson() {
 
     const swap = () => {
         setToJson(!toJson);
-        http.setData('input', output);
+        setInput(output);
     };
 
     return (
@@ -79,7 +99,7 @@ export default function PhpToJson() {
                     }
                     aria-invalid={!!error}
                     value={input}
-                    onChange={(e) => http.setData('input', e.target.value)}
+                    onChange={(e) => setInput(e.target.value)}
                 />
                 <InputError message={error} />
             </div>
